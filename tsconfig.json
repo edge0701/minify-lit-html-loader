@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "target": "es2018",
+    "allowJs": true,
+    "outDir": "dist",
+    "lib": [
+      "es2018"
+    ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "typings/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

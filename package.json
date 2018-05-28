@@ -1,0 +1,39 @@
+{
+  "name": "minify-lit-html-loader",
+  "version": "0.0.1",
+  "description": "A webpack loader to minify lit-html strings",
+  "main": "index.js",
+  "author": "Edward Watson",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "tsc",
+    "lint": "tslint -p .",
+    "prepublish": "yarn run clean && yarn run build"
+  },
+  "keywords": [
+    "minify-lit-html-loader",
+    "lit-html-loader",
+    "webpack",
+    "loader",
+    "lit-html"
+  ],
+  "dependencies": {
+    "convert-source-map": "^1.5.1",
+    "escodegen": "^1.9.1",
+    "esprima": "^4.0.0",
+    "estraverse": "^4.2.0",
+    "html-minifier": "^3.5.16",
+    "loader-utils": "^1.1.0",
+    "source-map": "0.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.1.2",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3",
+    "webpack": "^4.9.1",
+    "webpack-cli": "^2.1.4"
+  }
+}
