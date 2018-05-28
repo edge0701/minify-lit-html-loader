@@ -64,46 +64,46 @@ function successLoader(
 }
 
 function minifyLitHtml(sourceFileName, contents, options, loader): { code: string, map?: string } {
-  let ast = esprima.parse(contents, options.esprima);
   const chunks = contents.split('');
 
   function transform(ast) {
-      return estraverse.replace(ast, {
-          enter: (node) => {
-              if (node.type === 'TaggedTemplateExpression') {
-                if ((node.tag.type === 'Identifier' &&
-                    node.tag.name === 'html') ||
-                    (node.tag.type === 'MemberExpression' &&
-                    node.tag.property.type === 'Identifier' &&
-                    node.tag.property.name === 'html')) {
-                  const mini = minify(
-                    chunks.slice(node.quasi.range[0] + 1,
-                      node.quasi.range[1] - 1).join(''),
-                      options.htmlMinifier);
-                  return {
-                    ...node,
-                    quasi: {
-                      ...node.quasi,
-                      quasis: [
-                        {
-                          type: 'TemplateElement',
-                          value: {
-                            raw: mini,
-                          },
-                          range: [ node.quasi.range[0], mini.length ],
-                        },
-                      ],
+    return estraverse.replace(ast, {
+      enter: (node) => {
+          if (node.type === 'TaggedTemplateExpression') {
+            if ((node.tag.type === 'Identifier' &&
+                node.tag.name === 'html') ||
+                (node.tag.type === 'MemberExpression' &&
+                node.tag.property.type === 'Identifier' &&
+                node.tag.property.name === 'html')) {
+              const mini = minify(
+                chunks.slice(node.quasi.range[0] + 1,
+                  node.quasi.range[1] - 1).join(''),
+                  options.htmlMinifier);
+              return {
+                ...node,
+                quasi: {
+                  ...node.quasi,
+                  quasis: [
+                    {
+                      type: 'TemplateElement',
+                      value: {
+                        raw: mini,
+                      },
+                      range: [ node.quasi.range[0], mini.length ],
                     },
-                  };
-                }
-              }
-          },
-      });
+                  ],
+                },
+              };
+            }
+          }
+        },
+    });
   }
 
-  ast = transform(ast);
+  const ast = esprima.parse(contents, options.esprima);
+  const newAst = transform(ast);
 
-  const gen = escodegen.generate(ast, {
+  const gen = escodegen.generate(newAst, {
     sourceMap: sourceFileName,
     sourceMapWithCode: true,
     sourceContent: contents,
@@ -132,8 +132,9 @@ function makeLoaderOptions(loaderOptions: LoaderOptions) {
     ...loaderOptions,
     esprima: {
       ...loaderOptions.esprima,
+      loc: true,
       range: true,
-      sourceType: 'module',
+      sourceType: loaderOptions.esprima ? loaderOptions.esprima.sourceType || 'module' : 'module',
     },
     htmlMinifier: {
       caseSensitive: true,
@@ -144,8 +145,6 @@ function makeLoaderOptions(loaderOptions: LoaderOptions) {
       ...loaderOptions.htmlMinifier,
     },
   };
-
-  options.logLevel = options.logLevel.toUpperCase() as LogLevel;
 
   return options;
 }

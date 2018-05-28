@@ -59,10 +59,11 @@ interface Config {
   tokens: boolean;
   comment: boolean;
   tolerant: boolean;
+  sourceType: 'module' | 'script';
 }
 ```
 
-Range will always be set to true as this is required for the operation of the loader.
+`range` and `loc` will always be set to true as these are required for the operation of the loader.
 
 Options for `html-minifier` can be found [here](https://github.com/kangax/html-minifier#options-quick-reference)
 

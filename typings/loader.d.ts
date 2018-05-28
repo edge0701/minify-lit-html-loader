@@ -225,6 +225,7 @@ interface EsprimaOpts {
   tokens?: boolean;
   comment?: boolean;
   tolerant?: boolean;
+  sourceType?: string;
 }
 
 interface HtmlMinifierOpts {

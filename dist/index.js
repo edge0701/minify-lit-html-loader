@@ -42,7 +42,6 @@ function successLoader(loader, contents, inputMap, options, callback) {
     }
 }
 function minifyLitHtml(sourceFileName, contents, options, loader) {
-    let ast = esprima.parse(contents, options.esprima);
     const chunks = contents.split('');
     function transform(ast) {
         return estraverse.replace(ast, {
@@ -68,8 +67,9 @@ function minifyLitHtml(sourceFileName, contents, options, loader) {
             },
         });
     }
-    ast = transform(ast);
-    const gen = escodegen.generate(ast, {
+    const ast = esprima.parse(contents, options.esprima);
+    const newAst = transform(ast);
+    const gen = escodegen.generate(newAst, {
         sourceMap: sourceFileName,
         sourceMapWithCode: true,
         sourceContent: contents,
@@ -85,8 +85,7 @@ function getLoaderOptions(loader) {
     return options;
 }
 function makeLoaderOptions(loaderOptions) {
-    const options = Object.assign({ silent: false, logLevel: 'WARN', logInfoToStdOut: false, sourceRoot: process.cwd() }, loaderOptions, { esprima: Object.assign({}, loaderOptions.esprima, { range: true, sourceType: 'module' }), htmlMinifier: Object.assign({ caseSensitive: true, collapseWhitespace: true, minifyCSS: true, preventAttributesEscaping: true, removeComments: true }, loaderOptions.htmlMinifier) });
-    options.logLevel = options.logLevel.toUpperCase();
+    const options = Object.assign({}, loaderOptions, { esprima: Object.assign({}, loaderOptions.esprima, { loc: true, range: true, sourceType: loaderOptions.esprima ? loaderOptions.esprima.sourceType || 'module' : 'module' }), htmlMinifier: Object.assign({ caseSensitive: true, collapseWhitespace: true, minifyCSS: true, preventAttributesEscaping: true, removeComments: true }, loaderOptions.htmlMinifier) });
     return options;
 }
 module.exports = loader;
