@@ -129,10 +129,6 @@ function getLoaderOptions(loader: Webpack) {
 function makeLoaderOptions(loaderOptions: LoaderOptions) {
 
   const options = {
-    silent: false,
-    logLevel: 'WARN',
-    logInfoToStdOut: false,
-    sourceRoot: process.cwd(),
     ...loaderOptions,
     esprima: {
       ...loaderOptions.esprima,
