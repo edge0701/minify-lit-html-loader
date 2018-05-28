@@ -90,4 +90,3 @@ function makeLoaderOptions(loaderOptions) {
     return options;
 }
 module.exports = loader;
-//# sourceMappingURL=index.js.map
