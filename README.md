@@ -105,6 +105,24 @@ htmlMinifier: {
 }
 ```
 
+### Recommended Options
+
+The arguments below for ignoring custom fragments are recommended because without them, the minifier will have a parsing error if it encounters any less-than (`<`) or less-than-or-equal-to (`<=`) operators in your lit-html string.
+
+```
+{
+  loader: 'minify-lit-html-loader',
+  options: {
+    htmlMinifier: {
+      ignoreCustomFragments: [
+        /<\s/,
+        /<=/
+      ]
+    }
+  }
+},
+```
+
 <h2 align="center">Improvements</h2>
 
 There are currently no automated tests written for the loader and it has only been tested in a very limited way.
