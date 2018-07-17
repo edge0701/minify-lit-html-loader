@@ -1,6 +1,6 @@
 {
   "name": "minify-lit-html-loader",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A webpack loader to minify lit-html strings",
   "main": "index.js",
   "author": "Edward Watson",
@@ -21,8 +21,8 @@
   ],
   "dependencies": {
     "convert-source-map": "^1.5.1",
-    "escodegen": "^1.9.1",
-    "esprima": "^4.0.0",
+    "escodegen": "doplumi/escodegen#1492c1c849b4188093ed60bf217c66b9b7021dbe",
+    "esprima": "edge0701/esprima#4e0bb49553ba5d441b087492fc7b8a9b1a400cfb",
     "estraverse": "^4.2.0",
     "html-minifier": "^3.5.16",
     "loader-utils": "^1.1.0",

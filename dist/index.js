@@ -70,6 +70,7 @@ function minifyLitHtml(sourceFileName, contents, options, loader) {
                     }
                 }
             },
+            fallback: 'iteration',
         });
     }
     const ast = esprima.parse(contents, options.esprima);

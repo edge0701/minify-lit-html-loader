@@ -101,6 +101,7 @@ function minifyLitHtml(sourceFileName, contents, options, loader): { code: strin
             }
           }
         },
+        fallback: 'iteration',
     });
   }
 
