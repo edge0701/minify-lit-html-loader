@@ -50,10 +50,14 @@ function successLoader(
     return;
   }
 
-  if (outputMap && outputMap.mappings && inputMap) {
-    const map = mergeSourceMap(inputMap, outputMap);
-    if (map) {
-      callback(null, code, (map as any));
+  if (outputMap && outputMap.mappings) {
+    if (inputMap) {
+      const map = mergeSourceMap(inputMap, outputMap);
+      if (map) {
+        callback(null, code, (map as any));
+      } else {
+        callback(null, code, outputMap);
+      }
     } else {
       callback(null, code, outputMap);
     }

@@ -1,6 +1,6 @@
 {
   "name": "minify-lit-html-loader",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A webpack loader to minify lit-html strings",
   "main": "index.js",
   "author": "Edward Watson",

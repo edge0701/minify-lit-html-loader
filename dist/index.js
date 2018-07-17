@@ -27,10 +27,15 @@ function successLoader(loader, contents, inputMap, options, callback) {
         callback(e);
         return;
     }
-    if (outputMap && outputMap.mappings && inputMap) {
-        const map = merge_map_1.default(inputMap, outputMap);
-        if (map) {
-            callback(null, code, map);
+    if (outputMap && outputMap.mappings) {
+        if (inputMap) {
+            const map = merge_map_1.default(inputMap, outputMap);
+            if (map) {
+                callback(null, code, map);
+            }
+            else {
+                callback(null, code, outputMap);
+            }
         }
         else {
             callback(null, code, outputMap);
