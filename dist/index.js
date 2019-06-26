@@ -62,7 +62,7 @@ function minifyLitHtml(sourceFileName, contents, options, loader) {
                             tempHtmlArray.push(tempEle.value.raw);
                             const exp = node.quasi.expressions[index];
                             if (exp) {
-                                const id = `___${index}___`;
+                                const id = `--___:${index}___`;
                                 tempHtmlArray.push(id);
                                 expMap.set(exp, id);
                             }
