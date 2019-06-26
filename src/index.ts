@@ -68,8 +68,6 @@ function successLoader(
 }
 
 function minifyLitHtml(sourceFileName, contents, options, loader): { code: string, map?: string } {
-  const chunks = contents.split('');
-
   function transform(ast) {
     return estraverse.replace(ast, {
       enter: (node) => {
@@ -79,10 +77,21 @@ function minifyLitHtml(sourceFileName, contents, options, loader): { code: strin
                 (node.tag.type === 'MemberExpression' &&
                 node.tag.property.type === 'Identifier' &&
                 node.tag.property.name === 'html')) {
-              const mini = minify(
-                chunks.slice(node.quasi.range[0] + 1,
-                  node.quasi.range[1] - 1).join(''),
-                  options.htmlMinifier);
+                  const tempHtmlArray = [];
+                  const expMap = new Map();
+                  node.quasi.quasis.forEach((tempEle, index) => {
+                    tempHtmlArray.push(tempEle.value.raw);
+                    const exp = node.quasi.expressions[index];
+                    if (exp) {
+                      const id = `--___:${index}___`;
+                      tempHtmlArray.push(id);
+                      expMap.set(exp, id);
+                    }
+                  })
+                  let mini = minify(tempHtmlArray.join(''), options.htmlMinifier);
+                  expMap.forEach((id, exp) => {
+                    mini = mini.replace(id, `$\{${contents.substring(exp.range[0], exp.range[1])}\}`);
+                  });
               return {
                 ...node,
                 quasi: {
