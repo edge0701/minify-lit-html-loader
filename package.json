@@ -21,8 +21,8 @@
   ],
   "dependencies": {
     "convert-source-map": "^1.5.1",
-    "escodegen": "doplumi/escodegen#1492c1c849b4188093ed60bf217c66b9b7021dbe",
-    "esprima": "edge0701/esprima#4e0bb49553ba5d441b087492fc7b8a9b1a400cfb",
+    "escodegen": "^1.11.0",
+    "esprima": "^3.1.3",
     "estraverse": "^4.2.0",
     "html-minifier": "^3.5.16",
     "loader-utils": "^1.1.0",
