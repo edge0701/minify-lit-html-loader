@@ -9,8 +9,7 @@
   "scripts": {
     "clean": "rimraf dist/",
     "build": "tsc",
-    "lint": "tslint -p .",
-    "prepublish": "npm run clean && npm run build"
+    "lint": "tslint -p ."
   },
   "keywords": [
     "minify-lit-html-loader",
