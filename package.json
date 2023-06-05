@@ -10,7 +10,7 @@
     "clean": "rimraf dist/",
     "build": "tsc",
     "lint": "tslint -p .",
-    "prepublish": "yarn run clean && yarn run build"
+    "prepublish": "npm run clean && npm run build"
   },
   "keywords": [
     "minify-lit-html-loader",
