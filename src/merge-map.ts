@@ -1,15 +1,15 @@
 // This is a Typescript adaptation from Babel:
 // https://github.com/babel/babel/blob/master/packages/babel-core/src/transformation/file/merge-map.js
 
-import * as convertSourceMap from 'convert-source-map';
+// import * as convertSourceMap from 'convert-source-map';
 import * as sourceMap from 'source-map';
 
-export default function mergeSourceMap(
+export default async function mergeSourceMap(
   inputMap: SourceMap,
   map: SourceMap,
-): SourceMap {
-  const input = buildMappingData(inputMap);
-  const output = buildMappingData(map);
+): Promise<SourceMap> {
+  const input = await buildMappingData(inputMap);
+  const output = await buildMappingData(map);
 
   const mergedGenerator = new sourceMap.SourceMapGenerator();
   for (const { source } of input.sources) {
@@ -184,8 +184,8 @@ interface ResolvedGeneratedRange {
   columnEnd: number;
 }
 
-function buildMappingData(map: SourceMap): ResolvedMappings {
-  const consumer = new sourceMap.SourceMapConsumer(({
+async function buildMappingData(map: SourceMap): Promise<ResolvedMappings> {
+  const consumer = await new sourceMap.SourceMapConsumer(({
     ...map,
 
     // This is a bit hack. .addMapping expects source values to be relative,

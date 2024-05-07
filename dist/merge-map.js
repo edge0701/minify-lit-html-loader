@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const sourceMap = require("source-map");
-function mergeSourceMap(inputMap, map) {
-    const input = buildMappingData(inputMap);
-    const output = buildMappingData(map);
+async function mergeSourceMap(inputMap, map) {
+    const input = await buildMappingData(inputMap);
+    const output = await buildMappingData(map);
     const mergedGenerator = new sourceMap.SourceMapGenerator();
     for (const { source } of input.sources) {
         if (typeof source.content === 'string') {
@@ -95,8 +95,11 @@ function eachInputGeneratedRange(map, callback) {
         }
     }
 }
-function buildMappingData(map) {
-    const consumer = new sourceMap.SourceMapConsumer(Object.assign({}, map, { sourceRoot: null }));
+async function buildMappingData(map) {
+    const consumer = await new sourceMap.SourceMapConsumer({
+        ...map,
+        sourceRoot: null,
+    });
     const sources = new Map();
     const mappings = new Map();
     let last = null;

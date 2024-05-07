@@ -3,15 +3,15 @@ import * as path from 'path';
 import * as escodegen from 'escodegen';
 import * as esprima from 'esprima';
 import * as estraverse from 'estraverse';
-import * as htmlMinifier from 'html-minifier';
-import * as loaderUtils from 'loader-utils';
+import * as htmlMinifier from 'html-minifier-terser';
+// import * as loaderUtils from 'loader-utils';
 
 import mergeSourceMap from './merge-map';
 
 const minify = htmlMinifier.minify;
 
-const webpackInstances: Compiler[] = [];
-const loaderOptionsCache: LoaderOptionsCache = {};
+// const webpackInstances: Compiler[] = [];
+// const loaderOptionsCache: LoaderOptionsCache = {};
 
 /**
  * The entry point for minify-lit-html-loader
@@ -29,7 +29,7 @@ function loader(this: Webpack, contents: string, sourceMap: SourceMap) {
   );
 }
 
-function successLoader(
+async function successLoader(
   loader: Webpack,
   contents: string,
   inputMap: SourceMap,
@@ -37,9 +37,9 @@ function successLoader(
   callback: AsyncCallback,
 ) {
   const filePath = path.normalize(loader.resourcePath);
-  const shouldCreateSourceMap = (loader as any).sourceMap;
+  // const shouldCreateSourceMap = (loader as any).sourceMap;
 
-  const { code, map: outputMapString } = minifyLitHtml(filePath, contents, options, loader);
+  const { code, map: outputMapString } = await minifyLitHtml(filePath, contents, options, loader);
 
   let outputMap;
   try {
@@ -52,7 +52,7 @@ function successLoader(
 
   if (outputMap && outputMap.mappings) {
     if (inputMap) {
-      const map = mergeSourceMap(inputMap, outputMap);
+      const map = await mergeSourceMap(inputMap, outputMap);
       if (map) {
         callback(null, code, (map as any));
       } else {
@@ -67,62 +67,56 @@ function successLoader(
   }
 }
 
-function minifyLitHtml(sourceFileName, contents, options, loader): { code: string, map?: string } {
+async function minifyLitHtml(sourceFileName, contents, options, loader) {
   const chunks = contents.split('');
+  const nodesToProcess = [];
 
-  function transform(ast) {
-    return estraverse.replace(ast, {
-      enter: (node) => {
-          if (node.type === 'TaggedTemplateExpression') {
-            if ((node.tag.type === 'Identifier' &&
-                node.tag.name === 'html') ||
-                (node.tag.type === 'MemberExpression' &&
-                node.tag.property.type === 'Identifier' &&
-                node.tag.property.name === 'html')) {
-              const mini = minify(
-                chunks.slice(node.quasi.range[0] + 1,
-                  node.quasi.range[1] - 1).join(''),
-                  options.htmlMinifier);
-              return {
-                ...node,
-                quasi: {
-                  ...node.quasi,
-                  quasis: [
-                    {
-                      type: 'TemplateElement',
-                      value: {
-                        raw: mini,
-                      },
-                      range: [ node.quasi.range[0], mini.length ],
-                    },
-                  ],
-                },
-              };
-            }
-          }
-        },
-        fallback: 'iteration',
-    });
+  // Synchronously traverse to collect nodes
+  function collectNodes(ast) {
+      estraverse.replace(ast, {
+          enter: (node) => {
+              if (node.type === 'TaggedTemplateExpression' &&
+                  ((node.tag.type === 'Identifier' && node.tag.name === 'html') ||
+                  (node.tag.type === 'MemberExpression' && node.tag.property.type === 'Identifier' && node.tag.property.name === 'html'))) {
+                  nodesToProcess.push(node);
+                  return node;
+              }
+          },
+          fallback: 'iteration',
+      });
+  }
+
+  // Asynchronously minify collected nodes
+  async function processNodes() {
+      for (const node of nodesToProcess) {
+          const mini = await minify(chunks.slice(node.quasi.range[0] + 1, node.quasi.range[1] - 1).join(''), options.htmlMinifier);
+          // Mutate the node directly as it's already collected
+          node.quasi.quasis = [{
+              type: 'TemplateElement',
+              value: { raw: mini },
+              range: [node.quasi.range[0], node.quasi.range[0] + mini.length],
+          }];
+      }
   }
 
   const ast = esprima.parse(contents, options.esprima);
-  const newAst = transform(ast);
-
-  const gen = escodegen.generate(newAst, {
-    sourceMap: sourceFileName,
-    sourceMapWithCode: true,
-    sourceContent: contents,
+  collectNodes(ast);
+  await processNodes();
+  const gen = escodegen.generate(ast, {
+      sourceMap: sourceFileName,
+      sourceMapWithCode: true,
+      sourceContent: contents,
   });
 
   return {
-    code: gen.code,
-    map: gen.map.toString(),
+      code: gen.code,
+      map: gen.map.toString(),
   };
 }
 
 function getLoaderOptions(loader: Webpack) {
   const loaderOptions =
-    loaderUtils.getOptions<LoaderOptions>(loader) || ({} as LoaderOptions);
+    loader.getOptions<LoaderOptions>() || ({} as LoaderOptions);
 
   // validateLoaderOptions(loaderOptions);
 

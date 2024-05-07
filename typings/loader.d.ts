@@ -23,6 +23,7 @@ declare interface AsyncCallback {
  * Details here: https://webpack.github.io/docs/loaders.html#loader-context
  */
 declare interface Webpack {
+  getOptions<T>(): any;
   _compiler: Compiler;
   _module: WebpackModule;
   /**
