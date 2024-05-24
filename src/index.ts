@@ -4,14 +4,10 @@ import * as escodegen from 'escodegen';
 import * as esprima from 'esprima';
 import * as estraverse from 'estraverse';
 import * as htmlMinifier from 'html-minifier-terser';
-// import * as loaderUtils from 'loader-utils';
 
 import mergeSourceMap from './merge-map';
 
 const minify = htmlMinifier.minify;
-
-// const webpackInstances: Compiler[] = [];
-// const loaderOptionsCache: LoaderOptionsCache = {};
 
 /**
  * The entry point for minify-lit-html-loader
@@ -37,7 +33,6 @@ async function successLoader(
   callback: AsyncCallback,
 ) {
   const filePath = path.normalize(loader.resourcePath);
-  // const shouldCreateSourceMap = (loader as any).sourceMap;
 
   const { code, map: outputMapString } = await minifyLitHtml(filePath, contents, options, loader);
 
@@ -117,8 +112,6 @@ async function minifyLitHtml(sourceFileName, contents, options, loader) {
 function getLoaderOptions(loader: Webpack) {
   const loaderOptions =
     loader.getOptions<LoaderOptions>() || ({} as LoaderOptions);
-
-  // validateLoaderOptions(loaderOptions);
 
   const options = makeLoaderOptions(loaderOptions);
 
